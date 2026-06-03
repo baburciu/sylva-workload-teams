@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# This is the ROOT of the "workload teams" repo synced by the `workload-teams-repo`
+# unit on the management cluster (repo_path: ".").
+#
+# It generates one ConfigMap per team. The ConfigMap NAME becomes the team name,
+# and its `values` content is merged under `teams.<team-name>` of the
+# workload-team-defs Helm chart (via the Kyverno aggregation policy).
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: baburciu
+  files:
+  - values=team-baburciu.yaml

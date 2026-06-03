@@ -1,0 +1,83 @@
+apiVersion: workloadclusteroperator.sylva/v1alpha1
+kind: SylvaWorkloadCluster
+metadata:
+  name: wc-rocket
+  namespace: swct-baburciu
+spec:
+  infrastructure: openstack          # -> capi_providers.infra_provider: capo
+  k8sVersion: "1.33"                  # major.minor only; commit adcb7ec supports 1.33/1.34/1.35
+  controlPlane:
+    provider: rke2                   # -> bootstrap_provider: cabpr
+    replicas: 1
+  machineDeployments:
+    md0:
+      replicas: 1
+
+  # First (and only) preset; it carries the preset-base annotation and points at
+  # the sylva-core source + the admin's managed-workload-clusters-settings ConfigMap.
+  sylvaUnitsReleasePresets:
+  - default
+
+  # Deep-merged into the sylva-units `.cluster` values. Mirrors the CAPO settings
+  # of the rke2-capo-baburciu-rocket management cluster (same OpenStack project).
+  clusterSettings:
+    capo:
+      ssh_key_name: baburciu
+      network_id: "76759c52-f180-4931-ade6-063bfb332006"
+      flavor_name: m1.xlarge
+      os_image_selector:
+        os: ubuntu
+        hardened: true
+      rootVolume:
+        diskSize: 100
+        volumeType: ceph_ssd
+    machine_deployments:
+      md0:
+        capo:
+          failure_domain: nova
+
+  # Top-level (non-.cluster) values for THIS restricted-network lab.
+  # These go in overridingValues, NOT in the admin's managed_clusters_settings:
+  # that key defaults to mgmt_cluster_state_values and an explicit map would clobber it.
+  # No '{{ }}' templates allowed here (CEL-validated).
+  overridingValues:
+    proxies:
+      http_proxy: "http://172.20.136.219:3128"
+      https_proxy: "http://172.20.136.219:3128"
+      no_proxy: "localhost,.test,127.0.0.1,172.20.129.0/24,10.42.0.0/16,10.43.0.0/16,192.168.0.0/16,172.19.0.0/16,172.30.0.0/24"
+    registry_mirrors:
+      default_settings:
+        skip_verify: true
+        override_path: true
+      hosts_config:
+        docker.io:
+          - mirror_url: https://172.20.136.39/v2/proxy_cache_docker.io
+        quay.io:
+          - mirror_url: https://172.20.136.39/v2/proxy_cache_quay.io
+        registry.gitlab.com:
+          - mirror_url: https://172.20.136.39/v2/proxy_cache_registry.gitlab.com
+        ghcr.io:
+          - mirror_url: https://172.20.136.39/v2/proxy_cache_ghcr.io
+        registry.k8s.io:
+          - mirror_url: https://172.20.136.39/v2/proxy_cache_registry.k8s.io
+        gcr.io:
+          - mirror_url: https://172.20.136.39/v2/proxy_cache_gcr.io
+        registry.suse.com:
+          - mirror_url: https://172.20.136.39/v2/proxy_cache_registry.suse.com
+        registry.opensuse.org:
+          - mirror_url: https://172.20.136.39/v2/proxy_cache_registry.opensuse.org
+    ntp:
+      enabled: true
+      servers:
+      - 172.20.4.108
+    openstack:
+      storageClass:
+        name: "cinder-ceph-ssd"
+        type: "ceph_ssd"
+
+  # OpenStack credentials (clouds.yaml) are a SECRET, so they are NOT in this
+  # public repo. Create the Secret out-of-band in swct-baburciu (see README) and
+  # reference it here. Default valuesKey for a Secret is "values.yaml".
+  valuesFrom:
+  - type: Secret
+    name: capo-clouds-yaml

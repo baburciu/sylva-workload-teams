@@ -1,0 +1,4 @@
+# never push secrets
+*SECRET*
+*secret*.local.yaml
+clouds.yaml

@@ -1,0 +1,21 @@
+# Team definition for team "baburciu".
+# Content = one object under `teams.<team-name>` of the workload-team-defs chart.
+#
+# The management-cluster admin's workload-team-defs HelmRelease turns this into:
+#   - namespace        swct-baburciu
+#   - GitRepository    baburciu  (points at the url/path below)
+#   - Kustomization    baburciu  (applies cluster-definitions/ into swct-baburciu)
+#   - SylvaUnitsReleasePreset "default" (base preset, from chart values)
+#   - ConfigMap        managed-workload-clusters-settings (admin common values)
+#   - ServiceAccount/RBAC for the team's GitOps
+#
+# Because this is a PUBLIC repo, no git_secret_path is needed.
+
+gitrepository_spec:
+  url: https://github.com/baburciu/sylva-workload-teams.git
+  ref:
+    branch: master
+  interval: 5m
+
+# Directory in the repo above that holds the SylvaWorkloadCluster manifests.
+gitrepository_path: "cluster-definitions"

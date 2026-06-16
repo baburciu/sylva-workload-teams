@@ -75,6 +75,9 @@ spec:
         name: "cinder-ceph-ssd"
         type: "ceph_ssd"
 
+    security:
+      taint_control_plane: true
+
   # OpenStack credentials (clouds.yaml) are a SECRET, so they are NOT in this
   # public repo. Create the Secret out-of-band in swct-baburciu (see README) and
   # reference it here. Default valuesKey for a Secret is "values.yaml".

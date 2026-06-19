@@ -4,4 +4,5 @@ kind: Kustomization
 # Synced by the per-team Flux GitRepository/Kustomization "baburciu"
 # (created by the workload-team-defs chart) into namespace swct-baburciu.
 resources:
-# - wc-rocket.yaml
+  - wc-rocket.yaml
+  - podinfo-unit.yaml

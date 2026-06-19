@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: podinfo-tenant-workload
+  namespace: swct-baburciu
+data:
+  values: |
+    units:
+      # we create the namespace as a plain object via the passthrough chart, since if it workload-team-defs
+      # HelmRelease.spec.install.createNamespace:true, it was added to _internal.sylva_namespaces
+      podinfo-namespace:
+        info:
+          description: tenant podinfo namespace (restricted PSS), kept out of sylva_namespaces
+          maturity: stable
+        unit_templates:
+        - base-deps
+        enabled: true
+        repo: helm-passthrough
+        helm_chart_artifact_name: passthrough
+        helmrelease_spec:
+          targetNamespace: default
+          chart:
+            spec:
+              chart: .
+          values:
+            _common:
+              apiVersion: v1
+              kind: Namespace
+            podinfo:
+              metadata:
+                labels:
+                  pod-security.kubernetes.io/enforce: restricted
+                  pod-security.kubernetes.io/warn: restricted
+                  pod-security.kubernetes.io/audit: restricted
+      podinfo:
+        info:
+          description: podinfo demo app (tenant workload)
+          maturity: stable
+        unit_templates:
+        - base-deps      # deploy only after cluster-machines-ready
+        enabled: true
+        depends_on:
+          podinfo-namespace: true            # ns object must exist before the HelmRelease
+        helm_repo_url: oci://ghcr.io/stefanprodan/charts
+        helmrelease_spec:
+          chart:
+            spec:
+              chart: podinfo
+              version: 6.13.0
+          targetNamespace: podinfo
+          install:
+            createNamespace: false           # stays out of sylva_namespaces
+          values:
+            replicaCount: 5
+            podSecurityContext:
+              runAsNonRoot: true
+              runAsUser: 1000
+              fsGroup: 1000
+              seccompProfile:
+                type: RuntimeDefault
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              runAsNonRoot: true
+              capabilities:
+                drop:
+                - ALL

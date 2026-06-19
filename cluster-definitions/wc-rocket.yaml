@@ -5,7 +5,7 @@ metadata:
   namespace: swct-baburciu
 spec:
   infrastructure: openstack          # -> capi_providers.infra_provider: capo
-  k8sVersion: "1.33"                  # major.minor only; commit adcb7ec supports 1.33/1.34/1.35
+  k8sVersion: "1.34"                  # major.minor only; commit adcb7ec supports 1.33/1.34/1.35
   controlPlane:
     provider: rke2                   # -> bootstrap_provider: cabpr
     replicas: 1
@@ -76,7 +76,7 @@ spec:
         type: "ceph_ssd"
 
     security:
-      taint_control_plane: true
+      restrict_cp_scheduling: true
 
   # OpenStack credentials (clouds.yaml) are a SECRET, so they are NOT in this
   # public repo. Create the Secret out-of-band in swct-baburciu (see README) and
@@ -84,3 +84,6 @@ spec:
   valuesFrom:
   - type: Secret
     name: capo-clouds-yaml
+  - type: ConfigMap
+    name: podinfo-tenant-workload
+    valuesKey: values

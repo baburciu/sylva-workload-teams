@@ -21,6 +21,15 @@ spec:
   # Deep-merged into the sylva-units `.cluster` values. Mirrors the CAPO settings
   # of the rke2-capo-baburciu-rocket management cluster (same OpenStack project).
   clusterSettings:
+    additional_files:
+      device-ownership:
+        path: /var/lib/rancher/rke2/agent/etc/containerd/config-v3.toml.d/99-device-ownership.toml
+        content: |
+          [plugins]
+            [plugins."io.containerd.cri.v1.runtime"]
+              device_ownership_from_security_context = true
+            [plugins."io.containerd.grpc.v1.cri"]
+              device_ownership_from_security_context = true
     capo:
       ssh_key_name: baburciu
       network_id: "76759c52-f180-4931-ade6-063bfb332006"

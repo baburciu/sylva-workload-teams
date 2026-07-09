@@ -1,5 +1,7 @@
 # sylva-workload-teams
 
+[![My GitFut card](https://gitfut.com/baburciu.png)](https://gitfut.com/baburciu)
+
 Workload-teams repo to test the **Git-driven** Sylva workload-cluster path against the `rke2-capo-baburciu-rocket` management cluster (CAPO).
 
 ## What's in here

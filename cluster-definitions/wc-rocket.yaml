@@ -84,8 +84,10 @@ spec:
         name: "cinder-ceph-ssd"
         type: "ceph_ssd"
 
-    security:
-      restrict_cp_scheduling: true
+    # security.restrict_cp_scheduling removed: it only exists on sylva-core branch
+    # bb/issue-4113 (WI #4113); on main / bb/issue-4652 the schema rejects it and the
+    # workload cluster's sylva-units install fails ("additional properties
+    # 'restrict_cp_scheduling' not allowed"). Restore it once that work is merged.
 
   # OpenStack credentials (clouds.yaml) are a SECRET, so they are NOT in this
   # public repo. Create the Secret out-of-band in swct-baburciu (see README) and

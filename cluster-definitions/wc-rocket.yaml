@@ -54,6 +54,12 @@ spec:
       http_proxy: "http://172.20.136.219:3128"
       https_proxy: "http://172.20.136.219:3128"
       no_proxy: "localhost,.test,127.0.0.1,172.20.129.0/24,10.42.0.0/16,10.43.0.0/16,192.168.0.0/16,172.19.0.0/16,172.30.0.0/24"
+    # The Harbor proxy-cache below has a self-signed cert (CA CN=rocket.local). skip_verify
+    # only covers node containerd; the in-pod OCI clients (os-images-info's cosign check,
+    # oras, Flux OCI sources) need this too, or os-images-info fails with "x509: certificate
+    # signed by unknown authority" and the cluster unit never starts. Not inherited from the
+    # mgmt cluster. Safer alternative: oci_registry_extra_ca_certs with the rocket.local CA.
+    oci_registry_insecure: true
     registry_mirrors:
       default_settings:
         skip_verify: true

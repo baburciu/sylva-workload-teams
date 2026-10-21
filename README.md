@@ -12,6 +12,7 @@ team-baburciu.yaml          # team def: points the team GitRepository at cluster
 cluster-definitions/
   kustomization.yaml
   wc-rocket.yaml            # the SylvaWorkloadCluster (CAPO) ← workload-cluster-operator reconciles this
+  wc-rocket-test.yaml       # a second rke2 SylvaWorkloadCluster (1 CP, no workers, k8s 1.35)
 ```
 
 Flow: `workload-teams-repo` unit syncs the root → ConfigMap aggregated into `workload-team-defs`

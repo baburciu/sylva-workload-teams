@@ -6,3 +6,4 @@ kind: Kustomization
 resources:
   - wc-rocket.yaml
   - podinfo-unit.yaml
+  - wc-rocket-test.yaml

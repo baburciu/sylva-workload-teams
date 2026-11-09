@@ -90,22 +90,10 @@ spec:
         name: "cinder-ceph-ssd"
         type: "ceph_ssd"
 
-    # wc-rocket hosts CAPK nested clusters (sylva-core bb/avar/kubevirt-provider): the API of
-    # tenant kv-nested is a LoadBalancer Service here, on 192.168.19.116. That IP is reserved
-    # by the unbound Neutron port "kv-nested-vip"; being in a MetalLB pool, s-c-c also adds it
-    # to the allowedAddressPairs of the CAPO ports. Announced from CP nodes only, like lbpool
-    # (merge-append adds it to the default l2advertisement).
-    metallb:
-      l2_lbs:
-        address_pools:
-          kubevirt-tenants:
-            addresses:
-              - 192.168.19.116/32
-        l2_options:
-          advertisements:
-            l2advertisement:
-              advertised_pools:
-                - kubevirt-tenants
+    # wc-rocket hosts CAPK nested clusters (sylva-core bb/avar/kubevirt-provider): the MetalLB pool
+    # of the kv-nested VIP (192.168.19.116, Neutron port "kv-nested-vip") is created by the
+    # kubevirt-tenants chart from kubevirt_tenants.kv-nested.vip (mgmt preset), restricted to the
+    # kv-nested namespace, and still added to the allowedAddressPairs of the CAPO ports.
 
     # security.restrict_cp_scheduling removed: it only exists on sylva-core branch
     # bb/issue-4113 (WI #4113); on main / bb/issue-4652 the schema rejects it and the

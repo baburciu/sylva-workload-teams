@@ -11,7 +11,7 @@ spec:
     replicas: 1
   machineDeployments:
     md0:
-      replicas: 2                    # room for the CAPK tenant VMs (kv-nested: 8Gi CP + 4Gi worker) + a node to drain onto
+      replicas: 3                    # room for the CAPK tenant VMs (kv-nested: 8Gi CP + 4Gi worker) + a surge CP VM on tenant rolls; only nodes on nested-virt Nova hosts have /dev/kvm
 
   # First (and only) preset; it carries the preset-base annotation and points at
   # the sylva-core source + the admin's managed-workload-clusters-settings ConfigMap.
@@ -91,14 +91,14 @@ spec:
         type: "ceph_ssd"
 
     # wc-rocket hosts CAPK nested clusters (sylva-core bb/avar/kubevirt-provider): the kubevirt-tenants
-    # chart creates the MetalLB pool of the kv-nested VIP (192.168.19.116, Neutron port "kv-nested-vip"),
-    # restricted to the kv-nested namespace, which also gets added to the allowedAddressPairs of the
+    # chart creates the MetalLB pool of the kv-nested addresses (VIP 192.168.19.116, Neutron port "kv-nested-vip",
+    # reserved outside Sylva), restricted to the kv-nested namespace, which also get added to the allowedAddressPairs of the
     # CAPO ports. Set here and not in the shared mgmt preset: a tenant VIP belongs to one hosting cluster
     # (in the preset, wc-rocket-test got the VIP in its AAPs as well, and rolled).
     kubevirt_tenants:
       kv-nested:
         namespace: kv-nested
-        vip: 192.168.19.116
+        addresses: [192.168.19.116]
 
     # security.restrict_cp_scheduling removed: it only exists on sylva-core branch
     # bb/issue-4113 (WI #4113); on main / bb/issue-4652 the schema rejects it and the

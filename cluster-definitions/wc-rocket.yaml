@@ -11,7 +11,7 @@ spec:
     replicas: 1
   machineDeployments:
     md0:
-      replicas: 1                    # 2 = room for CAPK tenant VMs + a node to drain onto; 1 while kv-nested is deleted (Cinder quota)
+      replicas: 2                    # room for the CAPK tenant VMs (kv-nested: 8Gi CP + 4Gi worker) + a node to drain onto
 
   # First (and only) preset; it carries the preset-base annotation and points at
   # the sylva-core source + the admin's managed-workload-clusters-settings ConfigMap.
